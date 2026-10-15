@@ -16,6 +16,24 @@
             background-color: #0f172a; /* Slate 900 */
             color: #f8fafc; /* Slate 50 */
         }
+        @keyframes stat-bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .stat-bob {
+            animation: stat-bob 2.8s ease-in-out infinite;
+        }
+        .stat-bob-delay-1 {
+            animation-delay: 0.35s;
+        }
+        .stat-bob-delay-2 {
+            animation-delay: 0.7s;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .stat-bob {
+                animation: none;
+            }
+        }
         /* Custom Glowing Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -66,7 +84,7 @@
         <!-- Dashboard Mini / Stat Cards -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Total Tugas -->
-            <div class="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-indigo-500/40 transition-all">
+            <div class="stat-bob bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-indigo-500/40 transition-all">
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Tugas</p>
                     <h3 id="statTotal" class="text-3xl font-extrabold text-white mt-1">0</h3>
@@ -77,7 +95,7 @@
             </div>
 
             <!-- Belum Dikerjakan -->
-            <div class="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-amber-500/40 transition-all">
+            <div class="stat-bob stat-bob-delay-1 bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-amber-500/40 transition-all">
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Belum Dikerjakan</p>
                     <h3 id="statPending" class="text-3xl font-extrabold text-amber-400 mt-1">0</h3>
@@ -99,7 +117,7 @@
             </div>
 
             <!-- Selesai -->
-            <div class="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-emerald-500/40 transition-all">
+            <div class="stat-bob stat-bob-delay-2 bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-emerald-500/40 transition-all">
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Selesai</p>
                     <h3 id="statCompleted" class="text-3xl font-extrabold text-emerald-400 mt-1">0</h3>
