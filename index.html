@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskEdu - Dark Mode Task Manager</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #f8fafc; /* Slate 50 */
+        }
+        /* Custom Glowing Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6366f1;
+        }
+        /* Custom date picker dark styling */
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.8);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header Navbar -->
+    <header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/60 sticky top-0 z-30 shadow-lg shadow-indigo-950/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-xl shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
+                        TaskEdu
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">Dark Mode Task Manager</p>
+                </div>
+            </div>
+            <button id="btnOpenAddModal" class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center shadow-lg shadow-indigo-500/25 active:scale-95 border border-indigo-400/30">
+                <i class="fa-solid fa-plus mr-2"></i>Tambah Tugas
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+        <!-- Dashboard Mini / Stat Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Total Tugas -->
+            <div class="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-indigo-500/40 transition-all">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Tugas</p>
+                    <h3 id="statTotal" class="text-3xl font-extrabold text-white mt-1">0</h3>
+                </div>
+                <div class="w-12 h-12 bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+            </div>
+
+            <!-- Belum Dikerjakan -->
+            <div class="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-amber-500/40 transition-all">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Belum Dikerjakan</p>
+                    <h3 id="statPending" class="text-3xl font-extrabold text-amber-400 mt-1">0</h3>
+                </div>
+                <div class="w-12 h-12 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-hourglass-start"></i>
+                </div>
+            </div>
+
+            <!-- Sedang Dikerjakan -->
+            <div class="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-cyan-500/40 transition-all">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Sedang Dikerjakan</p>
+                    <h3 id="statInProgress" class="text-3xl font-extrabold text-cyan-400 mt-1">0</h3>
+                </div>
+                <div class="w-12 h-12 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-spinner animate-spin"></i>
+                </div>
+            </div>
+
+            <!-- Selesai -->
+            <div class="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between shadow-xl shadow-slate-950/40 hover:border-emerald-500/40 transition-all">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Selesai</p>
+                    <h3 id="statCompleted" class="text-3xl font-extrabold text-emerald-400 mt-1">0</h3>
+                </div>
+                <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter, Sort & Search Bar -->
+        <section class="bg-slate-800/80 backdrop-blur-md rounded-2xl p-4 border border-slate-700/60 shadow-xl space-y-4 md:space-y-0 md:flex md:items-center md:justify-between md:space-x-4">
+            <!-- Search Box -->
+            <div class="relative flex-1">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" id="searchInput" placeholder="Cari mata kuliah atau nama tugas..." class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+            </div>
+
+            <!-- Filters & Sorting Dropdowns -->
+            <div class="flex flex-wrap gap-2.5 items-center">
+                <!-- Filter Status -->
+                <select id="filterStatus" class="border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm bg-slate-900 text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                    <option value="ALL">Semua Status</option>
+                    <option value="Belum Dikerjakan">Belum Dikerjakan</option>
+                    <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+                    <option value="Selesai">Selesai</option>
+                </select>
+
+                <!-- Filter Matkul -->
+                <select id="filterMatkul" class="border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm bg-slate-900 text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none max-w-[160px]">
+                    <option value="ALL">Semua Matkul</option>
+                </select>
+
+                <!-- Sort Order -->
+                <select id="sortBy" class="border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm bg-slate-900 text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                    <option value="deadlineAsc">Deadline Terdekat</option>
+                    <option value="deadlineDesc">Deadline Terjauh</option>
+                    <option value="priorityHigh">Prioritas Tertinggi</option>
+                    <option value="createdAtNew">Terbaru Ditambahkan</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Task List Grid -->
+        <section>
+            <div id="taskList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamic Task Cards -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-16 bg-slate-800/40 rounded-3xl border-2 border-dashed border-slate-700/80 mt-4">
+                <div class="w-20 h-20 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-200">Tidak ada tugas ditemukan</h3>
+                <p class="text-sm text-slate-400 mt-1 max-w-sm mx-auto">Tidak ada tugas yang sesuai kriteria pencarian atau belum ada tugas yang dibuat.</p>
+                <button id="btnEmptyAdd" class="mt-5 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-lg shadow-indigo-600/30">
+                    + Tambah Tugas Baru
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Form (Tambah / Edit Tugas) -->
+    <div id="taskModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 overflow-y-auto">
+        <div class="bg-slate-800 border border-slate-700/80 rounded-2xl shadow-2xl shadow-indigo-950/50 w-full max-w-lg overflow-hidden transform transition-all my-8">
+            <!-- Modal Header -->
+            <div class="bg-slate-900/90 px-6 py-4 flex justify-between items-center border-b border-slate-700/80">
+                <h3 id="modalTitle" class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-indigo-400"></i>
+                    <span>Tambah Tugas Baru</span>
+                </h3>
+                <button id="btnCloseModal" class="text-slate-400 hover:text-white text-xl transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body Form -->
+            <form id="taskForm" class="p-6 space-y-4">
+                <input type="hidden" id="taskId">
+
+                <!-- Nama Mata Kuliah -->
+                <div>
+                    <label for="matkul" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Mata Kuliah *</label>
+                    <input type="text" id="matkul" required placeholder="Contoh: Pemrograman Web, Pemrosesan Sinyal" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                </div>
+
+                <!-- Judul Tugas -->
+                <div>
+                    <label for="title" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Judul / Detail Tugas *</label>
+                    <textarea id="title" required rows="3" placeholder="Contoh: Membuat laporan praktikum modul 3 & kumpul PDF di LMS" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"></textarea>
+                </div>
+
+                <!-- Deadline (Tanggal & Jam) -->
+                <div>
+                    <label for="deadline" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Tenggat Waktu (Deadline) *</label>
+                    <input type="datetime-local" id="deadline" required class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                </div>
+
+                <!-- Prioritas & Status Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Prioritas -->
+                    <div>
+                        <label for="priority" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Prioritas</label>
+                        <select id="priority" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                            <option value="Rendah">Rendah</option>
+                            <option value="Sedang" selected>Sedang</option>
+                            <option value="Tinggi">Tinggi</option>
+                        </select>
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                        <label for="status" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Status Tugas</label>
+                        <select id="status" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                            <option value="Belum Dikerjakan">Belum Dikerjakan</option>
+                            <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+                            <option value="Selesai">Selesai</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="pt-4 flex justify-end space-x-3 border-t border-slate-700/70 mt-6">
+                    <button type="button" id="btnCancelModal" class="px-4 py-2.5 border border-slate-700 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700/50 transition-all">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-indigo-600/30">
+                        Simpan Tugas
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-800/90 border border-slate-700 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center space-x-3 transition-all duration-300 transform translate-y-20 opacity-0 z-50 backdrop-blur-md">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">Pesan notifikasi...</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            TaskEdu Dark Edition &copy; Aplikasi Manajemen Tugas Kuliah Mahasiswa.
+        </div>
+    </footer>
+
+    <!-- JavaScript App Logic -->
+    <script>
+        const STORAGE_KEY = 'TASKEDU_MAHASISWA_DARK_DATA';
+
+        let tasks = [];
+
+        // DOM Elements
+        const taskListEl = document.getElementById('taskList');
+        const emptyStateEl = document.getElementById('emptyState');
+        const taskModalEl = document.getElementById('taskModal');
+        const taskForm = document.getElementById('taskForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const taskIdInput = document.getElementById('taskId');
+
+        // Form Inputs
+        const matkulInput = document.getElementById('matkul');
+        const titleInput = document.getElementById('title');
+        const deadlineInput = document.getElementById('deadline');
+        const priorityInput = document.getElementById('priority');
+        const statusInput = document.getElementById('status');
+
+        // Filters & Search
+        const searchInput = document.getElementById('searchInput');
+        const filterStatus = document.getElementById('filterStatus');
+        const filterMatkul = document.getElementById('filterMatkul');
+        const sortBy = document.getElementById('sortBy');
+
+        // Buttons
+        const btnOpenAddModal = document.getElementById('btnOpenAddModal');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        const btnCancelModal = document.getElementById('btnCancelModal');
+        const btnEmptyAdd = document.getElementById('btnEmptyAdd');
+
+        // Stats Elements
+        const statTotal = document.getElementById('statTotal');
+        const statPending = document.getElementById('statPending');
+        const statInProgress = document.getElementById('statInProgress');
+        const statCompleted = document.getElementById('statCompleted');
+        const statAnimationFrames = new WeakMap();
+
+        window.onload = function() {
+            loadTasksFromStorage();
+            renderApp();
+
+            btnOpenAddModal.addEventListener('click', () => openModal());
+            btnEmptyAdd.addEventListener('click', () => openModal());
+            btnCloseModal.addEventListener('click', closeModal);
+            btnCancelModal.addEventListener('click', closeModal);
+            taskForm.addEventListener('submit', handleFormSubmit);
+
+            searchInput.addEventListener('input', renderApp);
+            filterStatus.addEventListener('change', renderApp);
+            filterMatkul.addEventListener('change', renderApp);
+            sortBy.addEventListener('change', renderApp);
+        };
+
+        function loadTasksFromStorage() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    tasks = JSON.parse(stored);
+                } catch (e) {
+                    tasks = [];
+                }
+            } else {
+                tasks = [
+                    {
+                        id: 'task-1',
+                        matkul: 'Pemrograman Web',
+                        title: 'Membuat Dashboard TaskEdu versi Dark Theme interaktif menggunakan Tailwind CSS.',
+                        deadline: getFutureDate(2),
+                        priority: 'Tinggi',
+                        status: 'Sedang Dikerjakan',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'task-2',
+                        matkul: 'Kalkulus II',
+                        title: 'Mengerjakan Latihan Soal Bab Integral Tentu nomor 1 sampai 10.',
+                        deadline: getFutureDate(5),
+                        priority: 'Sedang',
+                        status: 'Belum Dikerjakan',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                saveTasksToStorage();
+            }
+        }
+
+        function saveTasksToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+        }
+
+        function getFutureDate(daysAhead) {
+            const date = new Date();
+            date.setDate(date.getDate() + daysAhead);
+            date.setHours(23, 59, 0, 0);
+            return date.toISOString().slice(0, 16);
+        }
+
+        function renderApp() {
+            updateMatkulDropdown();
+            updateDashboardStats();
+
+            const searchVal = searchInput.value.toLowerCase().trim();
+            const statusVal = filterStatus.value;
+            const matkulVal = filterMatkul.value;
+            const sortVal = sortBy.value;
+
+            let filtered = tasks.filter(task => {
+                const matchesSearch = task.title.toLowerCase().includes(searchVal) || task.matkul.toLowerCase().includes(searchVal);
+                const matchesStatus = statusVal === 'ALL' || task.status === statusVal;
+                const matchesMatkul = matkulVal === 'ALL' || task.matkul === matkulVal;
+                return matchesSearch && matchesStatus && matchesMatkul;
+            });
+
+            filtered.sort((a, b) => {
+                if (sortVal === 'deadlineAsc') {
+                    return new Date(a.deadline) - new Date(b.deadline);
+                } else if (sortVal === 'deadlineDesc') {
+                    return new Date(b.deadline) - new Date(a.deadline);
+                } else if (sortVal === 'priorityHigh') {
+                    const weight = { 'Tinggi': 3, 'Sedang': 2, 'Rendah': 1 };
+                    return weight[b.priority] - weight[a.priority];
+                } else if (sortVal === 'createdAtNew') {
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                }
+                return 0;
+            });
+
+            taskListEl.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyStateEl.classList.remove('hidden');
+            } else {
+                emptyStateEl.classList.add('hidden');
+                filtered.forEach(task => {
+                    taskListEl.appendChild(createTaskCard(task));
+                });
+            }
+        }
+
+        function updateMatkulDropdown() {
+            const selectedCurrent = filterMatkul.value;
+            const matkuls = [...new Set(tasks.map(t => t.matkul))].filter(Boolean);
+
+            filterMatkul.innerHTML = '<option value="ALL">Semua Matkul</option>';
+            matkuls.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                if (m === selectedCurrent) opt.selected = true;
+                filterMatkul.appendChild(opt);
+            });
+        }
+
+        function updateDashboardStats() {
+            animateStatCount(statTotal, tasks.length);
+            animateStatCount(statPending, tasks.filter(t => t.status === 'Belum Dikerjakan').length);
+            statInProgress.textContent = tasks.filter(t => t.status === 'Sedang Dikerjakan').length;
+            animateStatCount(statCompleted, tasks.filter(t => t.status === 'Selesai').length);
+        }
+
+        function animateStatCount(element, target) {
+            const activeFrame = statAnimationFrames.get(element);
+            if (activeFrame !== undefined) {
+                cancelAnimationFrame(activeFrame);
+            }
+
+            const start = Number(element.textContent) || 0;
+            if (start === target) return;
+
+            const duration = 600;
+            const startTime = performance.now();
+
+            function updateCount(currentTime) {
+                const progress = Math.min((currentTime - startTime) / duration, 1);
+                const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+                element.textContent = Math.round(start + (target - start) * easedProgress);
+
+                if (progress < 1) {
+                    statAnimationFrames.set(element, requestAnimationFrame(updateCount));
+                } else {
+                    statAnimationFrames.delete(element);
+                }
+            }
+
+            statAnimationFrames.set(element, requestAnimationFrame(updateCount));
+        }
+
+        function getPriorityBadge(priority) {
+            switch (priority) {
+                case 'Tinggi':
+                    return `<span class="px-2.5 py-1 text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-full flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]"></span>Tinggi</span>`;
+                case 'Sedang':
+                    return `<span class="px-2.5 py-1 text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-full flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>Sedang</span>`;
+                case 'Rendah':
+                default:
+                    return `<span class="px-2.5 py-1 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>Rendah</span>`;
+            }
+        }
+
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'Selesai':
+                    return `<span class="px-2.5 py-1 text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-check text-xs"></i> Selesai</span>`;
+                case 'Sedang Dikerjakan':
+                    return `<span class="px-2.5 py-1 text-xs font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-spinner animate-spin text-xs"></i> Sedang Dikerjakan</span>`;
+                case 'Belum Dikerjakan':
+                default:
+                    return `<span class="px-2.5 py-1 text-xs font-medium bg-slate-700/60 text-slate-300 border border-slate-600/40 rounded-lg flex items-center gap-1.5"><i class="fa-regular fa-clock text-xs"></i> Belum Dikerjakan</span>`;
+            }
+        }
+
+        function formatDeadline(deadlineStr) {
+            if (!deadlineStr) return { formattedDate: '-', timeWarningClass: 'text-slate-400', isPast: false };
+            const date = new Date(deadlineStr);
+            const now = new Date();
+            
+            const options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            const formattedDate = date.toLocaleDateString('id-ID', options);
+
+            const diffHours = (date - now) / (1000 * 60 * 60);
+            let timeWarningClass = "text-slate-400";
+
+            if (diffHours < 0) {
+                timeWarningClass = "text-rose-400 font-semibold";
+            } else if (diffHours <= 24) {
+                timeWarningClass = "text-amber-400 font-semibold";
+            }
+
+            return { formattedDate, timeWarningClass, isPast: diffHours < 0 };
+        }
+
+        function createTaskCard(task) {
+            const card = document.createElement('div');
+            const isDone = task.status === 'Selesai';
+            const deadlineInfo = formatDeadline(task.deadline);
+
+            card.className = `bg-slate-800/80 backdrop-blur-md rounded-2xl p-5 border transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 ${
+                isDone 
+                    ? 'border-slate-700/40 opacity-60 hover:opacity-90' 
+                    : 'border-slate-700/80 hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-950/40'
+            }`;
+
+            card.innerHTML = `
+                <div>
+                    <!-- Card Top Header -->
+                    <div class="flex items-start justify-between gap-2 mb-3">
+                        <span class="px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold rounded-lg truncate max-w-[170px]">
+                            ${escapeHtml(task.matkul)}
+                        </span>
+                        ${getPriorityBadge(task.priority)}
+                    </div>
+
+                    <!-- Task Title -->
+                    <h4 class="font-medium text-slate-100 text-base mb-2 leading-relaxed ${isDone ? 'line-through text-slate-500' : ''}">
+                        ${escapeHtml(task.title)}
+                    </h4>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-700/60 space-y-3">
+                    <!-- Deadline -->
+                    <div class="flex items-center text-xs ${deadlineInfo.timeWarningClass}">
+                        <i class="fa-regular fa-calendar-xmark mr-2 text-sm"></i>
+                        <span>${deadlineInfo.formattedDate} ${deadlineInfo.isPast && !isDone ? '(Terlewat)' : ''}</span>
+                    </div>
+
+                    <!-- Card Actions -->
+                    <div class="flex items-center justify-between pt-1">
+                        <button onclick="toggleTaskStatus('${task.id}')" title="Klik untuk ubah status cepat" class="hover:opacity-80 transition-opacity focus:outline-none">
+                            ${getStatusBadge(task.status)}
+                        </button>
+
+                        <div class="flex items-center space-x-1">
+                            <button onclick="editTask('${task.id}')" class="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-700/60 rounded-xl transition-all" title="Edit Tugas">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteTask('${task.id}')" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-700/60 rounded-xl transition-all" title="Hapus Tugas">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function openModal(isEdit = false) {
+            taskModalEl.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            if (!isEdit) {
+                modalTitle.innerHTML = `<i class="fa-solid fa-plus text-indigo-400"></i><span>Tambah Tugas Baru</span>`;
+                taskForm.reset();
+                taskIdInput.value = '';
+                deadlineInput.value = getFutureDate(1);
+            }
+        }
+
+        function closeModal() {
+            taskModalEl.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            taskForm.reset();
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const id = taskIdInput.value;
+            const matkul = matkulInput.value.trim();
+            const title = titleInput.value.trim();
+            const deadline = deadlineInput.value;
+            const priority = priorityInput.value;
+            const status = statusInput.value;
+
+            if (!matkul || !title || !deadline) {
+                showToast('Harap isi semua bidang wajib (*)', 'error');
+                return;
+            }
+
+            if (id) {
+                const index = tasks.findIndex(t => t.id === id);
+                if (index !== -1) {
+                    tasks[index] = { ...tasks[index], matkul, title, deadline, priority, status };
+                    showToast('Tugas berhasil diperbarui');
+                }
+            } else {
+                const newTask = {
+                    id: 'task-' + Date.now(),
+                    matkul,
+                    title,
+                    deadline,
+                    priority,
+                    status,
+                    createdAt: new Date().toISOString()
+                };
+                tasks.unshift(newTask);
+                showToast('Tugas baru berhasil ditambahkan');
+            }
+
+            saveTasksToStorage();
+            renderApp();
+            closeModal();
+        }
+
+        window.editTask = function(id) {
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+
+            taskIdInput.value = task.id;
+            matkulInput.value = task.matkul;
+            titleInput.value = task.title;
+            deadlineInput.value = task.deadline;
+            priorityInput.value = task.priority;
+            statusInput.value = task.status;
+
+            modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-400"></i><span>Edit Tugas Kuliah</span>`;
+            openModal(true);
+        };
+
+        window.deleteTask = function(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus tugas ini?')) {
+                tasks = tasks.filter(t => t.id !== id);
+                saveTasksToStorage();
+                renderApp();
+                showToast('Tugas telah dihapus', 'info');
+            }
+        };
+
+        window.toggleTaskStatus = function(id) {
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+
+            if (task.status === 'Belum Dikerjakan') {
+                task.status = 'Sedang Dikerjakan';
+            } else if (task.status === 'Sedang Dikerjakan') {
+                task.status = 'Selesai';
+            } else {
+                task.status = 'Belum Dikerjakan';
+            }
+
+            saveTasksToStorage();
+            renderApp();
+            showToast(`Status diubah ke "${task.status}"`);
+        };
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.textContent = message;
+
+            if (type === 'error') {
+                toastIcon.className = 'fa-solid fa-circle-exclamation text-rose-400 text-lg';
+            } else if (type === 'info') {
+                toastIcon.className = 'fa-solid fa-circle-info text-cyan-400 text-lg';
+            } else {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
